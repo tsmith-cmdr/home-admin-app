@@ -35,6 +35,25 @@ button {
   margin-right: 0.5rem;
 }
 
+/* Quick Links grid */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.link-button {
+  background: #e5e5ea;
+  padding: 0.8rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  display: block;
+  text-decoration: none;
+  color: black;
+}
+
 /* Modal styling */
 .modal {
   position: fixed;
@@ -81,4 +100,18 @@ button {
 
 .modal-buttons button:last-child {
   margin-right: 0;
+}
+
+#upcoming .card {
+  background: #fffbe6;
+  border-left: 4px solid #ffcc00;
+}
+
+.overdue {
+  background: #ffecec;
+  border-left: 4px solid #ff3b30;
+}
+
+.overdue strong {
+  color: #d70015;
 }

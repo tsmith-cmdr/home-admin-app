@@ -12,6 +12,11 @@
     <h1>Home Admin Hub</h1>
   </header>
 
+<section id="upcoming">
+  <h2>Upcoming Payments</h2>
+  <div id="upcoming-list"></div>
+</section>
+
   <section id="utilities">
     <h2>Utilities</h2>
     <div id="utilities-list"></div>
@@ -26,7 +31,8 @@
 
   <section id="links">
     <h2>Quick Links</h2>
-    <div id="links-grid"></div>
+    <div id="links-grid" class="links-grid"></div>
+    <button onclick="addQuickLink()">Add Quick Link</button>
   </section>
 
   <!-- Modal Editor -->
@@ -34,13 +40,13 @@
     <div class="modal-content">
       <h3>Edit Item</h3>
 
-      <label>Name / Type</label>
+      <label>Name / Label</label>
       <input id="edit-name" type="text">
 
-      <label>Date (DD-MM-YYYY)</label>
+      <label>Date (optional)</label>
       <input id="edit-date" type="date">
 
-      <label>Account Link</label>
+      <label>Link (URL)</label>
       <input id="edit-link" type="url">
 
       <div class="modal-buttons">
