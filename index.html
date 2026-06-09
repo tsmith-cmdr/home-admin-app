@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Admin Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <h1>Home Admin Hub</h1>
+  </header>
+
+  <section id="utilities">
+    <h2>Utilities</h2>
+    <div id="utilities-list"></div>
+    <button onclick="addUtility()">Add Utility</button>
+  </section>
+
+  <section id="insurance">
+    <h2>Insurance</h2>
+    <div id="insurance-list"></div>
+    <button onclick="addInsurance()">Add Policy</button>
+  </section>
+
+  <section id="links">
+    <h2>Quick Links</h2>
+    <div id="links-grid"></div>
+  </section>
+
+  <!-- Modal Editor -->
+  <div id="edit-modal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Item</h3>
+
+      <label>Name / Type</label>
+      <input id="edit-name" type="text">
+
+      <label>Date (DD-MM-YYYY)</label>
+      <input id="edit-date" type="date">
+
+      <label>Account Link</label>
+      <input id="edit-link" type="url">
+
+      <div class="modal-buttons">
+        <button id="save-edit">Save</button>
+        <button id="cancel-edit" class="cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
