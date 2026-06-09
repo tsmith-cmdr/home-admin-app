@@ -119,7 +119,7 @@ function getUpcomingItems() {
 // Add new utility
 function addUtility() {
   const name = prompt("Provider name:");
-  const date = prompt("Payment date (YYYY-MM-DD):");
+  const date = prompt("Payment date (DD-MM-YYYY):");
   const link = prompt("Account link (URL):");
   if (!name || !date || !link) return;
   utilities.push({ name, date, link });
@@ -129,7 +129,7 @@ function addUtility() {
 // Add new insurance policy
 function addInsurance() {
   const type = prompt("Policy type:");
-  const date = prompt("Renewal date (YYYY-MM-DD):");
+  const date = prompt("Renewal date (DD-MM-YYYY):");
   const link = prompt("Account link (URL):");
   if (!type || !date || !link) return;
   insurance.push({ type, date, link });
