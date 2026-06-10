@@ -34,15 +34,15 @@ upcomingList.innerHTML = upcoming.map(item => {
       Due: ${item.date}<br>
       <a href="${item.link}" target="_blank">Account</a><br><br>
 
-      <button onclick="createReminder('${item.name}', '${item.date}', '${item.link}')">
-        Reminder
-      </button>
+      <button onclick="addToCalendar('${item.name}', '${item.date}', '${item.link}', '${item.type}')">
+  Add to Calendar
+</button>
 
       ${isOverdue ? `
-        <button onclick="createReminder('${item.name} (OVERDUE)', '${item.date}', '${item.link}')"
-                style="background:#d70015;">
-          Remind Me Now
-        </button>
+        <button onclick="addToCalendar('${item.name} (OVERDUE)', '${item.date}', '${item.link}', '${item.type}')"
+        style="background:#d70015;">
+  Add to Calendar Now
+</button>
       ` : ''}
     </div>
   `;
@@ -58,7 +58,9 @@ upcomingList.innerHTML = upcoming.map(item => {
 
   <button onclick="editUtility(${i})">Edit</button>
   <button onclick="deleteUtility(${i})" style="background:#ff3b30">Delete</button>
-  <button onclick="createReminder('${u.name}', '${u.date}', '${u.link}')">Reminder</button>
+  <button onclick="addToCalendar('${u.name}', '${u.date}', '${u.link}', 'Utilities')">
+  Add to Calendar
+</button>
 </div>
   `).join("");
 
@@ -72,7 +74,9 @@ upcomingList.innerHTML = upcoming.map(item => {
 
   <button onclick="editInsurance(${i})">Edit</button>
   <button onclick="deleteInsurance(${i})" style="background:#ff3b30">Delete</button>
-  <button onclick="createReminder('${p.type}', '${p.date}', '${p.link}')">Reminder</button>
+  <button onclick="addToCalendar('${p.type}', '${p.date}', '${p.link}', 'Insurance')">
+  Add to Calendar
+</button>
 </div>
   `).join("");
 
@@ -85,6 +89,33 @@ upcomingList.innerHTML = upcoming.map(item => {
       <button onclick="deleteQuickLink(${i})" style="background:#ff3b30">Delete</button>
     </div>
   `).join("");
+}
+
+  // Add to Calendar
+function addToCalendar(title, date, link, category = "Home Admin") {
+  const start = new Date(date);
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour event
+
+  function formatICSDate(d) {
+    return d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  }
+
+  const icsContent =
+`BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DTSTART:${formatICSDate(start)}
+DTEND:${formatICSDate(end)}
+DESCRIPTION:${link}
+URL:${link}
+CATEGORIES:${category}
+END:VEVENT
+END:VCALENDAR`;
+
+  const blob = new Blob([icsContent], { type: "text/calendar" });
+  const url = URL.createObjectURL(blob);
+  window.location.href = url;
 }
 
   // Upcoming Items
@@ -135,6 +166,7 @@ function addInsurance() {
   insurance.push({ type, date, link });
   save();
 }
+
 // Add reminder
 function createReminder(title, date, link) {
   const encodedTitle = encodeURIComponent(title);
