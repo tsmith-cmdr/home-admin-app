@@ -2,6 +2,7 @@
 let utilities = JSON.parse(localStorage.getItem("utilities")) || [];
 let insurance = JSON.parse(localStorage.getItem("insurance")) || [];
 let quickLinks = JSON.parse(localStorage.getItem("quickLinks")) || [];
+let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [];
 
 // Track what is being edited
 let editingType = null; // "utility", "insurance", "quicklink"
@@ -12,6 +13,7 @@ function save() {
   localStorage.setItem("utilities", JSON.stringify(utilities));
   localStorage.setItem("insurance", JSON.stringify(insurance));
   localStorage.setItem("quickLinks", JSON.stringify(quickLinks));
+  localStorage.setItem("vehicles", JSON.stringify(vehicles));
   render();
 }
 
@@ -79,6 +81,31 @@ upcomingList.innerHTML = upcoming.map(item => {
 </button>
 </div>
   `).join("");
+  
+  // Vehicle Admin
+const vehicleList = document.getElementById("vehicle-list");
+
+vehicleList.innerHTML = vehicles.map((v, i) => `
+  <div class="card">
+    <strong>${v.name}</strong><br>
+    MOT: ${v.mot}<br>
+    Road Tax: ${v.tax}<br><br>
+
+    <a href="${v.motLink}" target="_blank">Check MOT</a><br>
+    <a href="${v.taxLink}" target="_blank">Renew Tax</a><br><br>
+
+    <button onclick="addToCalendar('${v.name} MOT', '${v.mot}', '${v.motLink}', 'Vehicle')">
+      MOT to Calendar
+    </button>
+
+    <button onclick="addToCalendar('${v.name} Road Tax', '${v.tax}', '${v.taxLink}', 'Vehicle')">
+      Tax to Calendar
+    </button><br><br>
+
+    <button onclick="editVehicle(${i})">Edit</button>
+    <button onclick="deleteVehicle(${i})" style="background:#ff3b30">Delete</button>
+  </div>
+`).join("");
 
   // Quick Links
   const linksGrid = document.getElementById("links-grid");
@@ -136,12 +163,18 @@ function getUpcomingItems() {
     type: "Insurance"
   }));
 
-  // Combine and filter out invalid dates
-  const all = [...utilItems, ...insItems].filter(item => {
+  // Add vehicle MOT + Tax items
+  const vehicleItems = vehicles.flatMap(v => [
+    { name: `${v.name} MOT`, date: v.mot, link: v.motLink, type: "Vehicle" },
+    { name: `${v.name} Road Tax`, date: v.tax, link: v.taxLink, type: "Vehicle" }
+  ]);
+
+  // Combine everything
+  const all = [...utilItems, ...insItems, ...vehicleItems].filter(item => {
     return item.date && !isNaN(new Date(item.date));
   });
 
-  // Sort by date ascending
+  // Sort by date
   all.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return all;
@@ -182,6 +215,40 @@ function addQuickLink() {
   if (!name || !link) return;
   quickLinks.push({ name, link });
   save();
+}
+
+// Add vehicle
+function addVehicle() {
+  const name = prompt("Vehicle name (e.g., BMW 3 Series):");
+  const mot = prompt("MOT date (YYYY-MM-DD):");
+  const tax = prompt("Road Tax date (YYYY-MM-DD):");
+  const motLink = "https://www.gov.uk/check-mot-status";
+  const taxLink = "https://www.gov.uk/vehicle-tax";
+
+  if (!name || !mot || !tax) return;
+
+  vehicles.push({ name, mot, tax, motLink, taxLink });
+  save();
+}
+
+function editVehicle(i) {
+  const v = vehicles[i];
+
+  const name = prompt("Vehicle name:", v.name);
+  const mot = prompt("MOT date (YYYY-MM-DD):", v.mot);
+  const tax = prompt("Road Tax date (YYYY-MM-DD):", v.tax);
+
+  if (!name || !mot || !tax) return;
+
+  vehicles[i] = { ...v, name, mot, tax };
+  save();
+}
+
+function deleteVehicle(i) {
+  if (confirm("Delete this vehicle?")) {
+    vehicles.splice(i, 1);
+    save();
+  }
 }
 
 // Open modal for editing

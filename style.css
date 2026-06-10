@@ -115,3 +115,8 @@ button {
 .overdue strong {
   color: #d70015;
 }
+
+#vehicles .card {
+  background: #eef7ff;
+  border-left: 4px solid #007aff;
+}
