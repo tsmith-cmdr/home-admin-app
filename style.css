@@ -1,5 +1,10 @@
+/* ============================================
+   THEME VARIABLES
+============================================ */
+
 :root {
   --bg: #f5f9ff;
+  --bg-gradient: radial-gradient(circle at top, #f5f9ff 0, #e9edf5 40%, #dde1eb 100%);
   --card-bg: #ffffff;
   --text: #111827;
   --subtext: #6b7280;
@@ -10,14 +15,15 @@
 }
 
 .dark {
-  --bg: #020617;
-  --card-bg: #020617;
-  --text: #e5e7eb;
-  --subtext: #9ca3af;
-  --border: rgba(148, 163, 184, 0.35);
-  --card-border: rgba(55, 65, 81, 0.9);
-  --shadow: rgba(0, 0, 0, 0.7);
-  --shadow-hover: rgba(0, 0, 0, 0.9);
+  --bg: #0f172a;
+  --bg-gradient: #0f172a;
+  --card-bg: #1e293b;
+  --text: #e2e8f0;
+  --subtext: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --shadow: rgba(0, 0, 0, 0.6);
+  --shadow-hover: rgba(0, 0, 0, 0.8);
 }
 
 /* Smooth theme transition */
@@ -46,7 +52,9 @@ body, section, .card, header, footer, button {
   }
 }
 
-/* Base layout */
+/* ============================================
+   BASE LAYOUT
+============================================ */
 
 * {
   box-sizing: border-box;
@@ -55,8 +63,12 @@ body, section, .card, header, footer, button {
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  background: var(--bg);
+  background: var(--bg-gradient);
   color: var(--text);
+}
+
+.dark body {
+  background: var(--bg);
 }
 
 #app {
@@ -65,7 +77,9 @@ body {
   padding: 16px;
 }
 
-/* Header & footer */
+/* ============================================
+   HEADER & FOOTER
+============================================ */
 
 .app-header {
   text-align: center;
@@ -92,7 +106,9 @@ body {
   color: var(--subtext);
 }
 
-/* Sections */
+/* ============================================
+   SECTIONS
+============================================ */
 
 main {
   display: flex;
@@ -119,29 +135,16 @@ section h2 {
   gap: 6px;
 }
 
-/* Section accent icons */
+/* Section icons */
+#upcoming h2::before { content: "⏰"; }
+#utilities h2::before { content: "💡"; }
+#insurance h2::before { content: "🛡️"; }
+#vehicles h2::before { content: "🚗"; }
+#quick-links h2::before { content: "🔗"; }
 
-#upcoming h2::before {
-  content: "⏰";
-}
-
-#utilities h2::before {
-  content: "💡";
-}
-
-#insurance h2::before {
-  content: "🛡️";
-}
-
-#vehicles h2::before {
-  content: "🚗";
-}
-
-#quick-links h2::before {
-  content: "🔗";
-}
-
-/* Cards */
+/* ============================================
+   CARDS
+============================================ */
 
 .card {
   background: var(--card-bg);
@@ -162,29 +165,16 @@ section h2 {
   font-weight: 600;
 }
 
-/* Category colour accents */
+/* Category accents */
+#upcoming .card { border-left: 4px solid #f59e0b; }
+#utilities .card { border-left: 4px solid #22c55e; }
+#insurance .card { border-left: 4px solid #3b82f6; }
+#vehicles .card { border-left: 4px solid #ec4899; }
+#quick-links .card { border-left: 4px solid #6366f1; }
 
-#upcoming .card {
-  border-left: 4px solid #f59e0b;
-}
-
-#utilities .card {
-  border-left: 4px solid #22c55e;
-}
-
-#insurance .card {
-  border-left: 4px solid #3b82f6;
-}
-
-#vehicles .card {
-  border-left: 4px solid #ec4899;
-}
-
-#quick-links .card {
-  border-left: 4px solid #6366f1;
-}
-
-/* Overdue styling */
+/* ============================================
+   OVERDUE
+============================================ */
 
 .overdue {
   background: #fef2f2;
@@ -195,11 +185,9 @@ section h2 {
   background: #450a0a;
 }
 
-.overdue strong {
-  color: #b91c1c;
-}
-
-/* Links */
+/* ============================================
+   LINKS
+============================================ */
 
 a {
   color: #2563eb;
@@ -211,7 +199,9 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Buttons */
+/* ============================================
+   BUTTONS
+============================================ */
 
 button {
   border: none;
@@ -232,27 +222,14 @@ button:hover {
   background: #020617;
 }
 
-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-  opacity: 0.9;
-}
-
-/* Button variants */
-
 button.secondary {
   background: #e5e7eb;
   color: #111827;
-  box-shadow: none;
-}
-
-button.secondary:hover {
-  background: #d1d5db;
 }
 
 .dark button.secondary {
-  background: #1f2937;
-  color: #e5e7eb;
+  background: #334155;
+  color: #e2e8f0;
 }
 
 button.danger {
@@ -263,7 +240,9 @@ button.danger:hover {
   background: #b91c1c;
 }
 
-/* Upcoming section special */
+/* ============================================
+   UPCOMING SECTION SPECIAL
+============================================ */
 
 #upcoming {
   background: linear-gradient(135deg, #fef9c3, #fffbeb);
@@ -271,19 +250,13 @@ button.danger:hover {
 }
 
 .dark #upcoming {
-  background: linear-gradient(135deg, #1f2937, #020617);
-  border-color: #4b5563;
+  background: #1e293b;
+  border-color: #475569;
 }
 
-#upcoming .card {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.dark #upcoming .card {
-  background: #020617;
-}
-
-/* Quick links layout */
+/* ============================================
+   QUICK LINKS LAYOUT
+============================================ */
 
 #quick-links .card {
   display: flex;
@@ -301,23 +274,13 @@ button.danger:hover {
   color: var(--subtext);
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+============================================ */
 
 @media (max-width: 600px) {
-  #app {
-    padding: 10px;
-  }
-
-  section {
-    padding: 12px 12px 8px;
-  }
-
-  .card {
-    padding: 9px 10px;
-  }
-
-  button {
-    padding: 5px 10px;
-    font-size: 0.78rem;
-  }
+  #app { padding: 10px; }
+  section { padding: 12px 12px 8px; }
+  .card { padding: 9px 10px; }
+  button { padding: 5px 10px; font-size: 0.78rem; }
 }
