@@ -52,7 +52,7 @@ END:VCALENDAR`;
 
 function addUtility() {
   const name = prompt("Utility name:");
-  const date = prompt("Next payment date (DD-MM-Y):");
+  const date = prompt("Next payment date (DD-MM-YYYY):");
   const link = prompt("Account URL:");
 
   if (!name || !date) return;
@@ -119,7 +119,7 @@ function deleteInsurance(i) {
 ============================ */
 
 function addVehicle() {
-  const name = prompt("Vehicle name (e.g., Hyundai Kona):");
+  const name = prompt("Vehicle name (e.g., BMW 3 Series):");
   const mot = prompt("MOT date (DD-MM-YYYY):");
   const tax = prompt("Road Tax date (DD-MM-YYYY):");
 
