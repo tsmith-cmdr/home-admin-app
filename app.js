@@ -1,14 +1,13 @@
-// Load saved data
+/* ============================
+   DATA STORAGE
+============================ */
+
 let utilities = JSON.parse(localStorage.getItem("utilities")) || [];
 let insurance = JSON.parse(localStorage.getItem("insurance")) || [];
 let quickLinks = JSON.parse(localStorage.getItem("quickLinks")) || [];
 let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [];
 
-// Track what is being edited
-let editingType = null; // "utility", "insurance", "quicklink"
-let editingIndex = null;
-
-// Save to localStorage
+/* Save all data */
 function save() {
   localStorage.setItem("utilities", JSON.stringify(utilities));
   localStorage.setItem("insurance", JSON.stringify(insurance));
@@ -17,111 +16,13 @@ function save() {
   render();
 }
 
-// Render UI
-function render() {
-  // Upcoming Payments Dashboard
-const upcomingList = document.getElementById("upcoming-list");
-const upcoming = getUpcomingItems();
+/* ============================
+   CALENDAR EVENT CREATION
+============================ */
 
-const today = new Date();
-
-upcomingList.innerHTML = upcoming.map(item => {
-  const itemDate = new Date(item.date);
-  const isOverdue = itemDate < today;
-
-  return `
-    <div class="card ${isOverdue ? 'overdue' : ''}">
-      <strong>${item.name}</strong> (${item.type})<br>
-      ${isOverdue ? `<span style="color:#d70015;font-weight:bold;">OVERDUE</span><br>` : ''}
-      Due: ${item.date}<br>
-      <a href="${item.link}" target="_blank">Account</a><br><br>
-
-      <button onclick="addToCalendar('${item.name}', '${item.date}', '${item.link}', '${item.type}')">
-  Add to Calendar
-</button>
-
-      ${isOverdue ? `
-        <button onclick="addToCalendar('${item.name} (OVERDUE)', '${item.date}', '${item.link}', '${item.type}')"
-        style="background:#d70015;">
-  Add to Calendar Now
-</button>
-      ` : ''}
-    </div>
-  `;
-}).join("");
-  
-  // Utilities
-  const utilList = document.getElementById("utilities-list");
-  utilList.innerHTML = utilities.map((u, i) => `
-    <div class="card">
-  <strong>${u.name}</strong><br>
-  Payment: ${u.date}<br>
-  <a href="${u.link}" target="_blank">Account</a><br><br>
-
-  <button onclick="editUtility(${i})">Edit</button>
-  <button onclick="deleteUtility(${i})" style="background:#ff3b30">Delete</button>
-  <button onclick="addToCalendar('${u.name}', '${u.date}', '${u.link}', 'Utilities')">
-  Add to Calendar
-</button>
-</div>
-  `).join("");
-
-  // Insurance
-  const insList = document.getElementById("insurance-list");
-  insList.innerHTML = insurance.map((p, i) => `
-    <div class="card">
-  <strong>${p.type}</strong><br>
-  Renewal: ${p.date}<br>
-  <a href="${p.link}" target="_blank">Account</a><br><br>
-
-  <button onclick="editInsurance(${i})">Edit</button>
-  <button onclick="deleteInsurance(${i})" style="background:#ff3b30">Delete</button>
-  <button onclick="addToCalendar('${p.type}', '${p.date}', '${p.link}', 'Insurance')">
-  Add to Calendar
-</button>
-</div>
-  `).join("");
-  
-  // Vehicle Admin
-const vehicleList = document.getElementById("vehicle-list");
-
-vehicleList.innerHTML = vehicles.map((v, i) => `
-  <div class="card">
-    <strong>${v.name}</strong><br>
-    MOT: ${v.mot}<br>
-    Road Tax: ${v.tax}<br><br>
-
-    <a href="${v.motLink}" target="_blank">Check MOT</a><br>
-    <a href="${v.taxLink}" target="_blank">Renew Tax</a><br><br>
-
-    <button onclick="addToCalendar('${v.name} MOT', '${v.mot}', '${v.motLink}', 'Vehicle')">
-      MOT to Calendar
-    </button>
-
-    <button onclick="addToCalendar('${v.name} Road Tax', '${v.tax}', '${v.taxLink}', 'Vehicle')">
-      Tax to Calendar
-    </button><br><br>
-
-    <button onclick="editVehicle(${i})">Edit</button>
-    <button onclick="deleteVehicle(${i})" style="background:#ff3b30">Delete</button>
-  </div>
-`).join("");
-
-  // Quick Links
-  const linksGrid = document.getElementById("links-grid");
-  linksGrid.innerHTML = quickLinks.map((l, i) => `
-    <div>
-      <a class="link-button" href="${l.link}" target="_blank">${l.name}</a>
-      <button onclick="editQuickLink(${i})">Edit</button>
-      <button onclick="deleteQuickLink(${i})" style="background:#ff3b30">Delete</button>
-    </div>
-  `).join("");
-}
-
-  // Add to Calendar
 function addToCalendar(title, date, link, category = "Home Admin") {
   const start = new Date(date);
-  const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour event
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
 
   function formatICSDate(d) {
     return d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -145,89 +46,93 @@ END:VCALENDAR`;
   window.location.href = url;
 }
 
-  // Upcoming Items
-function getUpcomingItems() {
-  const today = new Date();
+/* ============================
+   UTILITIES
+============================ */
 
-  const utilItems = utilities.map(u => ({
-    name: u.name,
-    date: u.date,
-    link: u.link,
-    type: "Utility"
-  }));
-
-  const insItems = insurance.map(p => ({
-    name: p.type,
-    date: p.date,
-    link: p.link,
-    type: "Insurance"
-  }));
-
-  // Add vehicle MOT + Tax items
-  const vehicleItems = vehicles.flatMap(v => [
-    { name: `${v.name} MOT`, date: v.mot, link: v.motLink, type: "Vehicle" },
-    { name: `${v.name} Road Tax`, date: v.tax, link: v.taxLink, type: "Vehicle" }
-  ]);
-
-  // Combine everything
-  const all = [...utilItems, ...insItems, ...vehicleItems].filter(item => {
-    return item.date && !isNaN(new Date(item.date));
-  });
-
-  // Sort by date
-  all.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  return all;
-}
-
-// Add new utility
 function addUtility() {
-  const name = prompt("Provider name:");
-  const date = prompt("Payment date (DD-MM-YYYY):");
-  const link = prompt("Account link (URL):");
-  if (!name || !date || !link) return;
+  const name = prompt("Utility name:");
+  const date = prompt("Next payment date (DD-MM-Y):");
+  const link = prompt("Account URL:");
+
+  if (!name || !date) return;
+
   utilities.push({ name, date, link });
   save();
 }
 
-// Add new insurance policy
+function editUtility(i) {
+  const u = utilities[i];
+  const name = prompt("Utility name:", u.name);
+  const date = prompt("Next payment date (DD-MM-YYYY):", u.date);
+  const link = prompt("Account URL:", u.link);
+
+  if (!name || !date) return;
+
+  utilities[i] = { name, date, link };
+  save();
+}
+
+function deleteUtility(i) {
+  if (confirm("Delete this utility?")) {
+    utilities.splice(i, 1);
+    save();
+  }
+}
+
+/* ============================
+   INSURANCE
+============================ */
+
 function addInsurance() {
-  const type = prompt("Policy type:");
+  const type = prompt("Insurance type (e.g., Car, Home):");
   const date = prompt("Renewal date (DD-MM-YYYY):");
-  const link = prompt("Account link (URL):");
-  if (!type || !date || !link) return;
+  const link = prompt("Account URL:");
+
+  if (!type || !date) return;
+
   insurance.push({ type, date, link });
   save();
 }
 
-// Add reminder
-function createReminder(title, date, link) {
-  const encodedTitle = encodeURIComponent(title);
-  const notes = encodeURIComponent(`Due: ${date}\n${link}`);
-  const url = `x-apple-reminder://?title=${encodedTitle}&notes=${notes}`;
-  window.location.href = url;
-}
+function editInsurance(i) {
+  const p = insurance[i];
+  const type = prompt("Insurance type:", p.type);
+  const date = prompt("Renewal date (DD-MM-YYYY):", p.date);
+  const link = prompt("Account URL:", p.link);
 
-// Add new quick link
-function addQuickLink() {
-  const name = prompt("Link label (e.g., 'Octopus Energy'):");
-  const link = prompt("URL:");
-  if (!name || !link) return;
-  quickLinks.push({ name, link });
+  if (!type || !date) return;
+
+  insurance[i] = { type, date, link };
   save();
 }
 
-// Add vehicle
+function deleteInsurance(i) {
+  if (confirm("Delete this insurance?")) {
+    insurance.splice(i, 1);
+    save();
+  }
+}
+
+/* ============================
+   VEHICLES (MOT + ROAD TAX)
+============================ */
+
 function addVehicle() {
-  const name = prompt("Vehicle name (e.g., BMW 3 Series):");
-  const mot = prompt("MOT date (YYYY-MM-DD):");
-  const tax = prompt("Road Tax date (YYYY-MM-DD):");
-  const motLink = "https://www.gov.uk/check-mot-status";
-  const taxLink = "https://www.gov.uk/vehicle-tax";
+  const name = prompt("Vehicle name (e.g., Hyundai Kona):");
+  const mot = prompt("MOT date (DD-MM-YYYY):");
+  const tax = prompt("Road Tax date (DD-MM-YYYY):");
 
   if (!name || !mot || !tax) return;
 
-  vehicles.push({ name, mot, tax, motLink, taxLink });
+  vehicles.push({
+    name,
+    mot,
+    tax,
+    motLink: "https://www.gov.uk/check-mot-status",
+    taxLink: "https://www.gov.uk/vehicle-tax"
+  });
+
   save();
 }
 
@@ -235,8 +140,8 @@ function editVehicle(i) {
   const v = vehicles[i];
 
   const name = prompt("Vehicle name:", v.name);
-  const mot = prompt("MOT date (YYYY-MM-DD):", v.mot);
-  const tax = prompt("Road Tax date (YYYY-MM-DD):", v.tax);
+  const mot = prompt("MOT date (DD-MM-YYYY):", v.mot);
+  const tax = prompt("Road Tax date (DD-MM-YYYY):", v.tax);
 
   if (!name || !mot || !tax) return;
 
@@ -251,53 +156,219 @@ function deleteVehicle(i) {
   }
 }
 
-// Open modal for editing
-function openModal(type, index, item) {
-  editingType = type;
-  editingIndex = index;
+/* ============================
+   QUICK LINKS
+============================ */
 
-  document.getElementById("edit-name").value = item.name || item.type;
-  document.getElementById("edit-date").value = item.date || "";
-  document.getElementById("edit-link").value = item.link;
+function addQuickLink() {
+  const name = prompt("Link name:");
+  const url = prompt("URL:");
 
-  document.getElementById("edit-modal").style.display = "flex";
-}
+  if (!name || !url) return;
 
-// Close modal
-function closeModal() {
-  document.getElementById("edit-modal").style.display = "none";
-}
-
-// Edit functions
-function editUtility(i) { openModal("utility", i, utilities[i]); }
-function editInsurance(i) { openModal("insurance", i, insurance[i]); }
-function editQuickLink(i) { openModal("quicklink", i, quickLinks[i]); }
-
-// Delete functions
-function deleteUtility(i) { if (confirm("Delete this utility?")) { utilities.splice(i, 1); save(); } }
-function deleteInsurance(i) { if (confirm("Delete this policy?")) { insurance.splice(i, 1); save(); } }
-function deleteQuickLink(i) { if (confirm("Delete this link?")) { quickLinks.splice(i, 1); save(); } }
-
-// Save modal edits
-document.getElementById("save-edit").onclick = function () {
-  const name = document.getElementById("edit-name").value;
-  const date = document.getElementById("edit-date").value;
-  const link = document.getElementById("edit-link").value;
-
-  if (editingType === "utility") {
-    utilities[editingIndex] = { name, date, link };
-  } else if (editingType === "insurance") {
-    insurance[editingIndex] = { type: name, date, link };
-  } else if (editingType === "quicklink") {
-    quickLinks[editingIndex] = { name, link };
-  }
-
+  quickLinks.push({ name, url });
   save();
-  closeModal();
-};
+}
 
-// Cancel modal
-document.getElementById("cancel-edit").onclick = closeModal;
+function editQuickLink(i) {
+  const q = quickLinks[i];
+  const name = prompt("Link name:", q.name);
+  const url = prompt("URL:", q.url);
 
-// Initial render
+  if (!name || !url) return;
+
+  quickLinks[i] = { name, url };
+  save();
+}
+
+function deleteQuickLink(i) {
+  if (confirm("Delete this link?")) {
+    quickLinks.splice(i, 1);
+    save();
+  }
+}
+
+/* ============================
+   UPCOMING DASHBOARD
+============================ */
+
+function getUpcomingItems() {
+  const utilItems = utilities.map(u => ({
+    name: u.name,
+    date: u.date,
+    link: u.link,
+    type: "Utility"
+  }));
+
+  const insItems = insurance.map(p => ({
+    name: p.type,
+    date: p.date,
+    link: p.link,
+    type: "Insurance"
+  }));
+
+  const vehicleItems = vehicles.flatMap(v => [
+    { name: `${v.name} MOT`, date: v.mot, link: v.motLink, type: "Vehicle" },
+    { name: `${v.name} Road Tax`, date: v.tax, link: v.taxLink, type: "Vehicle" }
+  ]);
+
+  const all = [...utilItems, ...insItems, ...vehicleItems].filter(item =>
+    item.date && !isNaN(new Date(item.date))
+  );
+
+  all.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return all;
+}
+
+/* ============================
+   RENDER FUNCTION
+============================ */
+
+function render() {
+  /* UPCOMING */
+  const upcomingList = document.getElementById("upcoming-list");
+  const items = getUpcomingItems();
+
+  upcomingList.innerHTML = items.map(item => {
+    const overdue = new Date(item.date) < new Date() ? "overdue" : "";
+    return `
+      <div class="card ${overdue}">
+        <strong>${item.name}</strong><br>
+        Due: ${item.date}<br><br>
+        <button onclick="addToCalendar('${item.name}', '${item.date}', '${item.link}', '${item.type}')">
+          Add to Calendar
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  /* UTILITIES */
+  const utilitiesList = document.getElementById("utilities-list");
+  utilitiesList.innerHTML = utilities.map((u, i) => `
+    <div class="card">
+      <strong>${u.name}</strong><br>
+      Next payment: ${u.date}<br>
+      <a href="${u.link}" target="_blank">Open account</a><br><br>
+
+      <button onclick="addToCalendar('${u.name}', '${u.date}', '${u.link}', 'Utility')">
+        Add to Calendar
+      </button>
+
+      <button onclick="editUtility(${i})" class="secondary">Edit</button>
+      <button onclick="deleteUtility(${i})" class="danger">Delete</button>
+    </div>
+  `).join("");
+
+  /* INSURANCE */
+  const insuranceList = document.getElementById("insurance-list");
+  insuranceList.innerHTML = insurance.map((p, i) => `
+    <div class="card">
+      <strong>${p.type}</strong><br>
+      Renewal: ${p.date}<br>
+      <a href="${p.link}" target="_blank">Open account</a><br><br>
+
+      <button onclick="addToCalendar('${p.type}', '${p.date}', '${p.link}', 'Insurance')">
+        Add to Calendar
+      </button>
+
+      <button onclick="editInsurance(${i})" class="secondary">Edit</button>
+      <button onclick="deleteInsurance(${i})" class="danger">Delete</button>
+    </div>
+  `).join("");
+
+  /* VEHICLES */
+  const vehicleList = document.getElementById("vehicle-list");
+  vehicleList.innerHTML = vehicles.map((v, i) => `
+    <div class="card">
+      <strong>${v.name}</strong><br>
+      MOT: ${v.mot}<br>
+      Road Tax: ${v.tax}<br><br>
+
+      <a href="${v.motLink}" target="_blank">Check MOT</a><br>
+      <a href="${v.taxLink}" target="_blank">Renew Tax</a><br><br>
+
+      <button onclick="addToCalendar('${v.name} MOT', '${v.mot}', '${v.motLink}', 'Vehicle')">
+        MOT to Calendar
+      </button>
+
+      <button onclick="addToCalendar('${v.name} Road Tax', '${v.tax}', '${v.taxLink}', 'Vehicle')">
+        Tax to Calendar
+      </button><br><br>
+
+      <button onclick="editVehicle(${i})" class="secondary">Edit</button>
+      <button onclick="deleteVehicle(${i})" class="danger">Delete</button>
+    </div>
+  `).join("");
+
+  /* QUICK LINKS */
+  const quickLinksList = document.getElementById("quick-links-list");
+  quickLinksList.innerHTML = quickLinks.map((q, i) => `
+    <div class="card">
+      <div class="card-title">
+        <strong>${q.name}</strong>
+        <span>${q.url}</span>
+      </div>
+      <div>
+        <button onclick="window.open('${q.url}', '_blank')">Open</button>
+        <button onclick="editQuickLink(${i})" class="secondary">Edit</button>
+        <button onclick="deleteQuickLink(${i})" class="danger">Delete</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ============================
+   THEME HANDLING
+============================ */
+
+const themeToggle = document.getElementById("theme-toggle");
+const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+// Load saved theme (manual override)
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme === "dark") {
+  document.body.classList.add("dark");
+  themeToggle.textContent = "Light Mode";
+} else if (savedTheme === "light") {
+  document.body.classList.remove("dark");
+  themeToggle.textContent = "Dark Mode";
+}
+
+// Apply system theme if no manual override
+function applySystemTheme() {
+  if (!localStorage.getItem("theme")) {
+    if (systemPrefersDark.matches) {
+      document.body.classList.add("dark");
+      themeToggle.textContent = "Light Mode";
+    } else {
+      document.body.classList.remove("dark");
+      themeToggle.textContent = "Dark Mode";
+    }
+
+    document.body.classList.add("theme-fade");
+    setTimeout(() => document.body.classList.remove("theme-fade"), 350);
+  }
+}
+
+// Run on load
+applySystemTheme();
+
+// Listen for system theme changes
+systemPrefersDark.addEventListener("change", applySystemTheme);
+
+// Manual toggle
+themeToggle.addEventListener("click", () => {
+  const isDark = document.body.classList.toggle("dark");
+
+  themeToggle.textContent = isDark ? "Light Mode" : "Dark Mode";
+
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+
+  document.body.classList.add("theme-fade");
+  setTimeout(() => document.body.classList.remove("theme-fade"), 350);
+});
+
+/* INITIAL RENDER */
 render();

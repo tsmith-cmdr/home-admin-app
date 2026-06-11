@@ -3,63 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Admin Hub</title>
+  <title>Home Admin</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <header>
-    <h1>Home Admin Hub</h1>
-  </header>
+  <div id="app">
+    <header class="app-header">
+      <h1>Home Admin</h1>
+      <p>Utilities • Insurance • Vehicles • Quick Links</p>
+      <button id="theme-toggle" class="secondary">Dark Mode</button>
+    </header>
 
-<section id="upcoming">
-  <h2>Upcoming Payments</h2>
-  <div id="upcoming-list"></div>
-</section>
+    <main>
+      <section id="upcoming">
+        <h2>Upcoming Payments</h2>
+        <div id="upcoming-list"></div>
+      </section>
 
-  <section id="utilities">
-    <h2>Utilities</h2>
-    <div id="utilities-list"></div>
-    <button onclick="addUtility()">Add Utility</button>
-  </section>
+      <section id="utilities">
+        <h2>Utilities</h2>
+        <div id="utilities-list"></div>
+        <button onclick="addUtility()">Add Utility</button>
+      </section>
 
-  <section id="insurance">
-    <h2>Insurance</h2>
-    <div id="insurance-list"></div>
-    <button onclick="addInsurance()">Add Policy</button>
-  </section>
-  
-  <section id="vehicles">
-  <h2>Vehicle Admin</h2>
-  <div id="vehicle-list"></div>
-  <button onclick="addVehicle()">Add Vehicle</button>
-</section>
+      <section id="insurance">
+        <h2>Insurance</h2>
+        <div id="insurance-list"></div>
+        <button onclick="addInsurance()">Add Insurance</button>
+      </section>
 
-  <section id="links">
-    <h2>Quick Links</h2>
-    <div id="links-grid" class="links-grid"></div>
-    <button onclick="addQuickLink()">Add Quick Link</button>
-  </section>
+      <section id="vehicles">
+        <h2>Vehicle Admin</h2>
+        <div id="vehicle-list"></div>
+        <button onclick="addVehicle()">Add Vehicle</button>
+      </section>
 
-  <!-- Modal Editor -->
-  <div id="edit-modal" class="modal">
-    <div class="modal-content">
-      <h3>Edit Item</h3>
+      <section id="quick-links">
+        <h2>Quick Links</h2>
+        <div id="quick-links-list"></div>
+        <button onclick="addQuickLink()">Add Quick Link</button>
+      </section>
+    </main>
 
-      <label>Name / Label</label>
-      <input id="edit-name" type="text">
-
-      <label>Date (optional)</label>
-      <input id="edit-date" type="date">
-
-      <label>Link (URL)</label>
-      <input id="edit-link" type="url">
-
-      <div class="modal-buttons">
-        <button id="save-edit">Save</button>
-        <button id="cancel-edit" class="cancel">Cancel</button>
-      </div>
-    </div>
+    <footer class="app-footer">
+      <span>v1.0 • Personal Admin</span>
+    </footer>
   </div>
 
   <script src="app.js"></script>
