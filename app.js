@@ -120,7 +120,7 @@ function deleteInsurance(i) {
 ============================ */
 
 function addVehicle() {
-  const name = prompt("Vehicle name (e.g., Ford Fiesta):");
+  const name = prompt("Vehicle name (e.g., BMW 3 Series):");
   const mot = prompt("MOT date (DD-MM-YYYY):");
   const tax = prompt("Road Tax date (DD-MM-YYYY):");
 
@@ -421,98 +421,3 @@ function initCollapsibles() {
 /* INITIALISE */
 render();
 initCollapsibles();
-```Here’s the full, updated code for all three files with all premium upgrades applied.
-
----
-
-### `index.html`
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Admin</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-  <div id="app">
-    <header class="app-header">
-      <div class="header-main">
-        <div class="header-text">
-          <h1>Home Admin</h1>
-          <p>Utilities • Insurance • Vehicles • Quick Links</p>
-        </div>
-        <div class="header-controls">
-          <button id="theme-toggle" class="secondary">Dark Mode</button>
-          <select id="accent-select" class="accent-select">
-            <option value="#6366f1">Indigo</option>
-            <option value="#22c55e">Green</option>
-            <option value="#3b82f6">Blue</option>
-            <option value="#f97316">Orange</option>
-            <option value="#ec4899">Pink</option>
-            <option value="#0ea5e9">Cyan</option>
-          </select>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <section id="upcoming" class="collapsible">
-        <h2 class="collapsible-header">Upcoming Payments</h2>
-        <div class="section-body">
-          <div id="upcoming-list"></div>
-        </div>
-      </section>
-
-      <section id="utilities" class="collapsible">
-        <h2 class="collapsible-header">Utilities</h2>
-        <div class="section-body">
-          <div id="utilities-list"></div>
-          <div class="section-actions">
-            <button onclick="addUtility()">Add Utility</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="insurance" class="collapsible">
-        <h2 class="collapsible-header">Insurance</h2>
-        <div class="section-body">
-          <div id="insurance-list"></div>
-          <div class="section-actions">
-            <button onclick="addInsurance()">Add Insurance</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="vehicles" class="collapsible">
-        <h2 class="collapsible-header">Vehicle Admin</h2>
-        <div class="section-body">
-          <div id="vehicle-list"></div>
-          <div class="section-actions">
-            <button onclick="addVehicle()">Add Vehicle</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="quick-links" class="collapsible">
-        <h2 class="collapsible-header">Quick Links</h2>
-        <div class="section-body">
-          <div id="quick-links-list"></div>
-          <div class="section-actions">
-            <button onclick="addQuickLink()">Add Quick Link</button>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <span>v2.0 • Personal Admin</span>
-    </footer>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
