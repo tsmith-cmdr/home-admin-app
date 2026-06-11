@@ -6,6 +6,7 @@ let utilities = JSON.parse(localStorage.getItem("utilities")) || [];
 let insurance = JSON.parse(localStorage.getItem("insurance")) || [];
 let quickLinks = JSON.parse(localStorage.getItem("quickLinks")) || [];
 let vehicles = JSON.parse(localStorage.getItem("vehicles")) || [];
+let savedAccent = localStorage.getItem("accent") || null;
 
 /* Save all data */
 function save() {
@@ -119,7 +120,7 @@ function deleteInsurance(i) {
 ============================ */
 
 function addVehicle() {
-  const name = prompt("Vehicle name (e.g., BMW 3 Series):");
+  const name = prompt("Vehicle name (e.g., Ford Fiesta):");
   const mot = prompt("MOT date (DD-MM-YYYY):");
   const tax = prompt("Road Tax date (DD-MM-YYYY):");
 
@@ -230,10 +231,10 @@ function render() {
   const upcomingList = document.getElementById("upcoming-list");
   const items = getUpcomingItems();
 
-  upcomingList.innerHTML = items.map(item => {
+  upcomingList.innerHTML = items.map((item, idx) => {
     const overdue = new Date(item.date) < new Date() ? "overdue" : "";
     return `
-      <div class="card ${overdue}">
+      <div class="card ${overdue} card-animate" style="animation-delay:${idx * 40}ms">
         <strong>${item.name}</strong><br>
         Due: ${item.date}<br><br>
         <button onclick="addToCalendar('${item.name}', '${item.date}', '${item.link}', '${item.type}')">
@@ -246,7 +247,7 @@ function render() {
   /* UTILITIES */
   const utilitiesList = document.getElementById("utilities-list");
   utilitiesList.innerHTML = utilities.map((u, i) => `
-    <div class="card">
+    <div class="card card-animate" style="animation-delay:${i * 40}ms">
       <strong>${u.name}</strong><br>
       Next payment: ${u.date}<br>
       <a href="${u.link}" target="_blank">Open account</a><br><br>
@@ -263,7 +264,7 @@ function render() {
   /* INSURANCE */
   const insuranceList = document.getElementById("insurance-list");
   insuranceList.innerHTML = insurance.map((p, i) => `
-    <div class="card">
+    <div class="card card-animate" style="animation-delay:${i * 40}ms">
       <strong>${p.type}</strong><br>
       Renewal: ${p.date}<br>
       <a href="${p.link}" target="_blank">Open account</a><br><br>
@@ -280,7 +281,7 @@ function render() {
   /* VEHICLES */
   const vehicleList = document.getElementById("vehicle-list");
   vehicleList.innerHTML = vehicles.map((v, i) => `
-    <div class="card">
+    <div class="card card-animate" style="animation-delay:${i * 40}ms">
       <strong>${v.name}</strong><br>
       MOT: ${v.mot}<br>
       Road Tax: ${v.tax}<br><br>
@@ -304,7 +305,7 @@ function render() {
   /* QUICK LINKS */
   const quickLinksList = document.getElementById("quick-links-list");
   quickLinksList.innerHTML = quickLinks.map((q, i) => `
-    <div class="card">
+    <div class="card card-animate" style="animation-delay:${i * 40}ms">
       <div class="card-title">
         <strong>${q.name}</strong>
         <span>${q.url}</span>
@@ -319,13 +320,32 @@ function render() {
 }
 
 /* ============================
-   THEME HANDLING
+   THEME & ACCENT HANDLING
 ============================ */
 
 const themeToggle = document.getElementById("theme-toggle");
+const accentSelect = document.getElementById("accent-select");
 const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-// Load saved theme (manual override)
+/* Accent colour */
+function applyAccent(colour) {
+  document.documentElement.style.setProperty("--accent", colour);
+}
+
+if (savedAccent) {
+  applyAccent(savedAccent);
+  if (accentSelect) accentSelect.value = savedAccent;
+}
+
+if (accentSelect) {
+  accentSelect.addEventListener("change", () => {
+    const val = accentSelect.value;
+    applyAccent(val);
+    localStorage.setItem("accent", val);
+  });
+}
+
+/* Load saved theme (manual override) */
 const savedTheme = localStorage.getItem("theme");
 
 if (savedTheme === "dark") {
@@ -336,7 +356,12 @@ if (savedTheme === "dark") {
   themeToggle.textContent = "Dark Mode";
 }
 
-// Apply system theme if no manual override
+/* Optional OLED tweak for dark + standalone */
+if (window.matchMedia("(display-mode: standalone)").matches && savedTheme === "dark") {
+  document.body.classList.add("oled");
+}
+
+/* Apply system theme if no manual override */
 function applySystemTheme() {
   if (!localStorage.getItem("theme")) {
     if (systemPrefersDark.matches) {
@@ -352,23 +377,142 @@ function applySystemTheme() {
   }
 }
 
-// Run on load
+/* Run on load */
 applySystemTheme();
 
-// Listen for system theme changes
+/* Listen for system theme changes */
 systemPrefersDark.addEventListener("change", applySystemTheme);
 
-// Manual toggle
+/* Manual toggle */
 themeToggle.addEventListener("click", () => {
   const isDark = document.body.classList.toggle("dark");
 
   themeToggle.textContent = isDark ? "Light Mode" : "Dark Mode";
-
   localStorage.setItem("theme", isDark ? "dark" : "light");
 
   document.body.classList.add("theme-fade");
   setTimeout(() => document.body.classList.remove("theme-fade"), 350);
 });
 
-/* INITIAL RENDER */
+/* ============================
+   COLLAPSIBLE SECTIONS
+============================ */
+
+function initCollapsibles() {
+  const sections = document.querySelectorAll("section.collapsible");
+  sections.forEach(section => {
+    const header = section.querySelector(".collapsible-header");
+    const body = section.querySelector(".section-body");
+    if (!header || !body) return;
+
+    body.style.maxHeight = body.scrollHeight + "px";
+
+    header.addEventListener("click", () => {
+      const isCollapsed = section.classList.toggle("collapsed");
+      if (isCollapsed) {
+        body.style.maxHeight = "0px";
+      } else {
+        body.style.maxHeight = body.scrollHeight + "px";
+      }
+    });
+  });
+}
+
+/* INITIALISE */
 render();
+initCollapsibles();
+```Here’s the full, updated code for all three files with all premium upgrades applied.
+
+---
+
+### `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="app">
+    <header class="app-header">
+      <div class="header-main">
+        <div class="header-text">
+          <h1>Home Admin</h1>
+          <p>Utilities • Insurance • Vehicles • Quick Links</p>
+        </div>
+        <div class="header-controls">
+          <button id="theme-toggle" class="secondary">Dark Mode</button>
+          <select id="accent-select" class="accent-select">
+            <option value="#6366f1">Indigo</option>
+            <option value="#22c55e">Green</option>
+            <option value="#3b82f6">Blue</option>
+            <option value="#f97316">Orange</option>
+            <option value="#ec4899">Pink</option>
+            <option value="#0ea5e9">Cyan</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="upcoming" class="collapsible">
+        <h2 class="collapsible-header">Upcoming Payments</h2>
+        <div class="section-body">
+          <div id="upcoming-list"></div>
+        </div>
+      </section>
+
+      <section id="utilities" class="collapsible">
+        <h2 class="collapsible-header">Utilities</h2>
+        <div class="section-body">
+          <div id="utilities-list"></div>
+          <div class="section-actions">
+            <button onclick="addUtility()">Add Utility</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="insurance" class="collapsible">
+        <h2 class="collapsible-header">Insurance</h2>
+        <div class="section-body">
+          <div id="insurance-list"></div>
+          <div class="section-actions">
+            <button onclick="addInsurance()">Add Insurance</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="vehicles" class="collapsible">
+        <h2 class="collapsible-header">Vehicle Admin</h2>
+        <div class="section-body">
+          <div id="vehicle-list"></div>
+          <div class="section-actions">
+            <button onclick="addVehicle()">Add Vehicle</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="quick-links" class="collapsible">
+        <h2 class="collapsible-header">Quick Links</h2>
+        <div class="section-body">
+          <div id="quick-links-list"></div>
+          <div class="section-actions">
+            <button onclick="addQuickLink()">Add Quick Link</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>v2.0 • Personal Admin</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

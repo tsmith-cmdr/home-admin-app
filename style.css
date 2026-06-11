@@ -3,31 +3,37 @@
 ============================================ */
 
 :root {
-  --bg: #f5f9ff;
+  --bg: #0f172a;
   --bg-light-gradient: radial-gradient(circle at top, #f5f9ff 0, #e9edf5 40%, #dde1eb 100%);
-  --card-bg: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.86);
   --text: #111827;
   --subtext: #6b7280;
   --border: rgba(148, 163, 184, 0.25);
   --card-border: rgba(209, 213, 219, 0.8);
-  --shadow: rgba(15, 23, 42, 0.08);
-  --shadow-hover: rgba(15, 23, 42, 0.12);
+  --shadow: rgba(15, 23, 42, 0.12);
+  --shadow-hover: rgba(15, 23, 42, 0.2);
+  --accent: #6366f1;
 }
 
 .dark {
-  --bg: #0f172a;
-  --bg-light-gradient: #0f172a; /* disable gradient in dark mode */
-  --card-bg: #1e293b;
+  --bg: #020617;
+  --bg-light-gradient: #020617;
+  --card-bg: rgba(15, 23, 42, 0.9);
   --text: #e2e8f0;
   --subtext: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --card-border: rgba(255, 255, 255, 0.12);
-  --shadow: rgba(0, 0, 0, 0.6);
-  --shadow-hover: rgba(0, 0, 0, 0.8);
+  --border: rgba(148, 163, 184, 0.35);
+  --card-border: rgba(55, 65, 81, 0.9);
+  --shadow: rgba(0, 0, 0, 0.7);
+  --shadow-hover: rgba(0, 0, 0, 0.9);
+}
+
+/* Optional OLED pure black when body has .oled */
+.dark.oled {
+  --bg: #000000;
 }
 
 /* ============================================
-   GLOBAL TRANSITIONS
+   GLOBAL TRANSITIONS & ANIMATIONS
 ============================================ */
 
 body, section, .card, header, footer, button {
@@ -36,10 +42,11 @@ body, section, .card, header, footer, button {
     color 0.35s ease,
     border-color 0.35s ease,
     box-shadow 0.35s ease,
-    opacity 0.35s ease;
+    opacity 0.35s ease,
+    transform 0.15s ease;
 }
 
-/* Fade/blur animation on theme change */
+/* Theme fade */
 .theme-fade {
   animation: themeFade 0.35s ease;
 }
@@ -49,8 +56,22 @@ body, section, .card, header, footer, button {
   to   { opacity: 1;   filter: blur(0); }
 }
 
+/* Card entrance */
+.card-animate {
+  animation: cardIn 0.35s ease forwards;
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+@keyframes cardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ============================================
-   BASE LAYOUT
+   BASE LAYOUT & BACKGROUND
 ============================================ */
 
 * { box-sizing: border-box; }
@@ -60,6 +81,19 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   background: var(--bg-light-gradient);
   color: var(--text);
+}
+
+/* subtle texture via layered gradients */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 0 0, rgba(255,255,255,0.12), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(15,23,42,0.18), transparent 55%);
+  opacity: 0.6;
+  z-index: -1;
 }
 
 .dark body {
@@ -73,25 +107,66 @@ body {
 }
 
 /* ============================================
-   HEADER & FOOTER
+   HEADER & FOOTER (STICKY)
 ============================================ */
 
 .app-header {
-  text-align: center;
-  padding: 16px 8px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 10px 4px 8px;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(to bottom,
+    rgba(248, 250, 252, 0.92),
+    rgba(248, 250, 252, 0.75),
+    transparent
+  );
 }
 
-.app-header h1 {
+.dark .app-header {
+  background: linear-gradient(to bottom,
+    rgba(15, 23, 42, 0.96),
+    rgba(15, 23, 42, 0.8),
+    transparent
+  );
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-text h1 {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
-.app-header p {
+.header-text p {
   margin: 4px 0 0;
   font-size: 0.85rem;
   color: var(--subtext);
 }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.accent-select {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+/* Footer */
 
 .app-footer {
   text-align: center;
@@ -101,32 +176,35 @@ body {
 }
 
 /* ============================================
-   SECTIONS
+   SECTIONS & COLLAPSIBLE
 ============================================ */
 
 main {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-top: 4px;
 }
 
 section {
   background: var(--card-bg);
   border-radius: 18px;
-  padding: 14px 14px 10px;
+  padding: 10px 12px 8px;
   border: 1px solid var(--border);
   box-shadow:
     0 18px 40px var(--shadow),
     0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
 }
 
 section h2 {
-  margin: 0 0 10px;
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: 1.02rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
 }
 
 /* Section icons */
@@ -135,6 +213,47 @@ section h2 {
 #insurance h2::before { content: "🛡️"; }
 #vehicles h2::before { content: "🚗"; }
 #quick-links h2::before { content: "🔗"; }
+
+/* Collapsible behaviour */
+.section-body {
+  margin-top: 8px;
+}
+
+.collapsible.collapsed .section-body {
+  max-height: 0;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+.collapsible .section-body {
+  transition:
+    max-height 0.25s ease,
+    opacity 0.25s ease,
+    padding 0.25s ease;
+}
+
+.collapsible-header::after {
+  content: "⌃";
+  margin-left: auto;
+  font-size: 0.8rem;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+  opacity: 0.7;
+}
+
+.collapsible.collapsed .collapsible-header::after {
+  transform: rotate(-90deg);
+}
+
+/* Section inner actions / dividers */
+
+.section-actions {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+}
 
 /* ============================================
    CARDS
@@ -147,12 +266,6 @@ section h2 {
   margin-bottom: 8px;
   border: 1px solid var(--card-border);
   box-shadow: 0 6px 14px var(--shadow);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.12s ease;
-}
-
-.card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px var(--shadow-hover);
 }
 
 .card strong { font-weight: 600; }
@@ -162,7 +275,7 @@ section h2 {
 #utilities .card { border-left: 4px solid #22c55e; }
 #insurance .card { border-left: 4px solid #3b82f6; }
 #vehicles .card { border-left: 4px solid #ec4899; }
-#quick-links .card { border-left: 4px solid #6366f1; }
+#quick-links .card { border-left: 4px solid var(--accent); }
 
 /* ============================================
    OVERDUE
@@ -182,7 +295,7 @@ section h2 {
 ============================================ */
 
 a {
-  color: #2563eb;
+  color: var(--accent);
   text-decoration: none;
   font-size: 0.9rem;
 }
@@ -190,7 +303,7 @@ a {
 a:hover { text-decoration: underline; }
 
 /* ============================================
-   BUTTONS
+   BUTTONS & MICRO-INTERACTIONS
 ============================================ */
 
 button {
@@ -201,20 +314,43 @@ button {
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  background: #111827;
+  background: var(--accent);
   color: #f9fafb;
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.35), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+button:hover::after {
+  opacity: 0.35;
 }
 
 button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.01);
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.35);
-  background: #020617;
 }
+
+button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+  opacity: 0.95;
+}
+
+/* Button variants */
 
 button.secondary {
   background: #e5e7eb;
   color: #111827;
+  box-shadow: none;
 }
 
 .dark button.secondary {
@@ -245,7 +381,7 @@ button.danger:hover {
 }
 
 /* ============================================
-   QUICK LINKS
+   QUICK LINKS LAYOUT
 ============================================ */
 
 #quick-links .card {
@@ -270,7 +406,9 @@ button.danger:hover {
 
 @media (max-width: 600px) {
   #app { padding: 10px; }
-  section { padding: 12px 12px 8px; }
+  .header-main { flex-direction: column; align-items: flex-start; }
+  .header-controls { align-self: stretch; justify-content: flex-start; flex-wrap: wrap; }
+  section { padding: 10px 10px 8px; }
   .card { padding: 9px 10px; }
   button { padding: 5px 10px; font-size: 0.78rem; }
 }
